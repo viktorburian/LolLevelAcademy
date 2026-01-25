@@ -1,6 +1,6 @@
-#include <_stdio.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <stdlib.h>
 #include <getopt.h>
 
 #include "common.h"
@@ -15,19 +15,24 @@ void print_usage(char *argv[]) {
 
 int main(int argc, char *argv[]) {
     char *filename = NULL;
+    char *addargs = NULL;
     bool newfile = false;
     char c;
 
     int dbfd = -1;
     struct dbheader_t *dbheader = NULL;
+    struct employee_t *employees = NULL;
 
-    while ((c = getopt(argc, argv, "nf:")) != -1) {
+    while ((c = getopt(argc, argv, "nf:a:")) != -1) {
         switch (c) {
             case 'n':
                 newfile = true;
                 break;
             case 'f':
                 filename = optarg;
+                break;
+            case 'a':
+                addargs = optarg;
                 break;
             case '?':
                 printf("Unknown option -%c\n", c);
@@ -66,7 +71,28 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    output_file(dbfd, dbheader);
+    if (read_employees(dbfd, dbheader, &employees) == STATUS_ERROR) {
+        printf("Failed to read employees\n");
+        return -1;
+    }
+
+    if (addargs) {
+        dbheader->count++;
+        employees = realloc(employees, dbheader->count * sizeof(struct employee_t));
+        if (employees == NULL) {
+            printf("Malloc failed\n");
+            return -1;
+        }
+        if (add_employee(dbheader, employees, addargs) == STATUS_ERROR) {
+            printf("Failed to add employee\n");
+            return -1;
+        }
+    }
+
+    if (output_file(dbfd, dbheader, employees) == STATUS_ERROR) {
+        printf("Failed to output file\n");
+        return -1;
+    }
 
     return 0;
 }
