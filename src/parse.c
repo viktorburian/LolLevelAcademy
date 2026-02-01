@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/_endian.h>
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <sys/stat.h>
@@ -161,26 +160,38 @@ int read_employees(int fd, struct dbheader_t *header, struct employee_t **employ
     return ret_sts;
 }
 
-int add_employee(struct dbheader_t *header, struct employee_t *employees, char *addstring) {
-    if (header == NULL) {
-        printf("Invalid pointer to header\n");
+int add_employee(struct dbheader_t *header, struct employee_t **employees, char *addstring) {
+    if (NULL == header) return STATUS_ERROR;
+    if (NULL == employees ) return STATUS_ERROR;
+    if (NULL == *employees) return STATUS_ERROR;
+    if (NULL == addstring) return STATUS_ERROR;
+
+    struct employee_t *e = *employees;
+    e = realloc(e, sizeof(struct employee_t)*header->count+1);
+    if (e == NULL) {
+        printf("Malloc failed\n");
         return STATUS_ERROR;
     }
 
-    if (employees == NULL) {
-        printf("Invalid pointer to employees\n");
-        return STATUS_ERROR;
-    }
+    header->count++;
 
     int index = header->count - 1;
 
     char *name = strtok(addstring, ",");
-    char *address = strtok(NULL, ",");
-    char *hours = strtok(NULL, ",");
+    if (NULL == name) return STATUS_ERROR;
 
-    strncpy(employees[index].name, name, sizeof(employees[index].name));
-    strncpy(employees[index].address, address, sizeof(employees[index].address));
-    employees[index].hours = atoi(hours);
+    char *address = strtok(NULL, ",");
+    if (NULL == address) return STATUS_ERROR;
+
+    char *hours = strtok(NULL, ",");
+    if (NULL == hours) return STATUS_ERROR;
+
+
+    strncpy(e[index].name, name, sizeof(e[index].name)-1);
+    strncpy(e[index].address, address, sizeof(e[index].address)-1);
+    e[index].hours = atoi(hours);
+
+    *employees = e;
 
     return STATUS_SUCCESS;
 }

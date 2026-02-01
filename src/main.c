@@ -11,6 +11,8 @@ void print_usage(char *argv[]) {
     printf("Usage: %s -n -f <database file>\n", argv[0]);
     printf("\t -n  - create new database file\n");
     printf("\t -f  - (required) path to database file\n");
+    printf("\t -a  - add employee via CSV (name,address,hours)\n");
+    printf("\t -l  - list employees\n");
 }
 
 int main(int argc, char *argv[]) {
@@ -77,13 +79,7 @@ int main(int argc, char *argv[]) {
     }
 
     if (addargs) {
-        dbheader->count++;
-        employees = realloc(employees, dbheader->count * sizeof(struct employee_t));
-        if (employees == NULL) {
-            printf("Malloc failed\n");
-            return -1;
-        }
-        if (add_employee(dbheader, employees, addargs) == STATUS_ERROR) {
+        if (add_employee(dbheader, &employees, addargs) == STATUS_ERROR) {
             printf("Failed to add employee\n");
             return -1;
         }
