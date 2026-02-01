@@ -167,7 +167,7 @@ int add_employee(struct dbheader_t *header, struct employee_t **employees, char 
     if (NULL == addstring) return STATUS_ERROR;
 
     struct employee_t *e = *employees;
-    e = realloc(e, sizeof(struct employee_t)*header->count+1);
+    e = realloc(e, sizeof(struct employee_t)*(header->count+1));
     if (e == NULL) {
         printf("Malloc failed\n");
         return STATUS_ERROR;
