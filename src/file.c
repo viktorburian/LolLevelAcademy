@@ -9,6 +9,10 @@
 #include "file.h"
 
 int create_db_file(char *filename) {
+    if (NULL == filename) {
+        return STATUS_ERROR;
+    }
+
     int fd = open(filename, O_RDONLY);
     if (fd != -1) {
         close(fd);
@@ -26,6 +30,10 @@ int create_db_file(char *filename) {
 }
 
 int open_db_file(char *filename) {
+    if (NULL == filename) {
+        return STATUS_ERROR;
+    }
+
     int fd = open(filename, O_RDWR, 0644);
 
     if (fd == -1) {

@@ -9,7 +9,7 @@
 #include "parse.h"
 
 int create_db_header(struct dbheader_t **headerOut) {
-    if (headerOut == NULL) {
+    if (NULL == headerOut) {
         printf("Invalid pointer to headerOut\n");
         return STATUS_ERROR;
     }
@@ -31,11 +31,10 @@ int create_db_header(struct dbheader_t **headerOut) {
 }
 
 int validate_db_header(int fd, struct dbheader_t **headerOut) {
-    if (headerOut == NULL) {
+    if (NULL == headerOut) {
         printf("Invalid pointer to headerOut\n");
         return STATUS_ERROR;
     }
-
     if (fd < 0) {
         printf("Got invalid FD\n");
         return STATUS_ERROR;
@@ -87,14 +86,8 @@ int output_file(int fd, struct dbheader_t *header, struct employee_t *employees)
         printf("Got invalid FD\n");
         return STATUS_ERROR;
     }
-
     if (header == NULL) {
         printf("Invalid pointer to header\n");
-        return STATUS_ERROR;
-    }
-
-    if (employees == NULL) {
-        printf("Invalid pointer to employees\n");
         return STATUS_ERROR;
     }
 
@@ -109,7 +102,7 @@ int output_file(int fd, struct dbheader_t *header, struct employee_t *employees)
     
     write(fd, header, sizeof(struct dbheader_t));
 
-    for (int i = 0; i < count; i++) {
+    for (int i = 0; (NULL != employees) && (i < count); i++) {
         employees[i].hours = htonl(employees[i].hours);
         write(fd, &employees[i], sizeof(struct employee_t));
     }

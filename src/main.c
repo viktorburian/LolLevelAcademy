@@ -8,6 +8,10 @@
 #include "parse.h"
 
 void print_usage(char *argv[]) {
+    if (NULL == argv) {
+        return;
+    }
+
     printf("Usage: %s -n -f <database file>\n", argv[0]);
     printf("\t -n  - create new database file\n");
     printf("\t -f  - (required) path to database file\n");
@@ -63,6 +67,7 @@ int main(int argc, char *argv[]) {
         }
         if (create_db_header(&dbheader) == STATUS_ERROR) {
             printf("Failed to create database header\n");
+            close(dbfd);
             return -1;
         }
     } else {
@@ -73,13 +78,13 @@ int main(int argc, char *argv[]) {
         }
         if (validate_db_header(dbfd, &dbheader) == STATUS_ERROR) {
             printf("Database header validation failed\n");
+            close(dbfd);
             return -1;
         }
-    }
-
-    if (read_employees(dbfd, dbheader, &employees) == STATUS_ERROR) {
-        printf("Failed to read employees\n");
-        return -1;
+        if (read_employees(dbfd, dbheader, &employees) == STATUS_ERROR) {
+            printf("Failed to read employees\n");
+            return -1;
+        }
     }
 
     if (addargs) {
