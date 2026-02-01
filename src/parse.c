@@ -195,3 +195,23 @@ int add_employee(struct dbheader_t *header, struct employee_t **employees, char 
 
     return STATUS_SUCCESS;
 }
+
+int list_employees(struct dbheader_t *header, struct employee_t *employees) {
+    if (NULL == header) {
+        printf("Invalid pointer to `header`\n");
+        return STATUS_ERROR;
+    }
+    if (NULL == employees) {
+        printf("Invalid pointer to `employeesOut`\n");
+        return STATUS_ERROR;
+    }
+
+    for (int i = 0; i < header->count; i++) {
+        printf("Employee %d\n", i);
+        printf("\tName: %s\n", employees[i].name);
+        printf("\tAddress: %s\n", employees[i].address);
+        printf("\tHours: %d\n", employees[i].hours);
+    }
+
+    return STATUS_SUCCESS;
+}

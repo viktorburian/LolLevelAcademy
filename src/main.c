@@ -19,13 +19,14 @@ int main(int argc, char *argv[]) {
     char *filename = NULL;
     char *addargs = NULL;
     bool newfile = false;
+    bool list = false;
     char c;
 
     int dbfd = -1;
     struct dbheader_t *dbheader = NULL;
     struct employee_t *employees = NULL;
 
-    while ((c = getopt(argc, argv, "nf:a:")) != -1) {
+    while ((c = getopt(argc, argv, "nf:a:l")) != -1) {
         switch (c) {
             case 'n':
                 newfile = true;
@@ -35,6 +36,9 @@ int main(int argc, char *argv[]) {
                 break;
             case 'a':
                 addargs = optarg;
+                break;
+            case 'l':
+                list = true;
                 break;
             case '?':
                 printf("Unknown option -%c\n", c);
@@ -81,6 +85,13 @@ int main(int argc, char *argv[]) {
     if (addargs) {
         if (add_employee(dbheader, &employees, addargs) == STATUS_ERROR) {
             printf("Failed to add employee\n");
+            return -1;
+        }
+    }
+
+    if (list) {
+        if (list_employees(dbheader, employees) == STATUS_ERROR) {
+            printf("Failed to list employees\n");
             return -1;
         }
     }
